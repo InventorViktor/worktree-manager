@@ -1,0 +1,10 @@
+# Build results
+bin/
+obj/
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# development files
+fastTest
