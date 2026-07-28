@@ -3,33 +3,25 @@ using WorktreeManager.Models;
 
 namespace WorktreeManager.Services;
 
-/// <summary>
-/// Provides access to git worktree information by shelling out to git.
-/// </summary>
-public sealed class GitWorktreeService
+public static class Git
 {
-    /// <summary>
-    /// Returns all worktrees for the repository at or containing <paramref name="workingDirectory"/>.
-    /// </summary>
-    /// <param name="workingDirectory">Directory to run git in. Defaults to the current directory.</param>
-    /// <exception cref="InvalidOperationException">Thrown when git is not available or the directory is not inside a repository.</exception>
-    public IReadOnlyList<Worktree> GetWorktrees(string? workingDirectory = null)
+    public static string Run(params string[] args)
     {
-        workingDirectory ??= Directory.GetCurrentDirectory();
-
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "git",
-                Arguments = "worktree list --porcelain",
-                WorkingDirectory = workingDirectory,
+                WorkingDirectory = Directory.GetCurrentDirectory(),
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             }
         };
+
+        foreach (var arg in args)
+            process.StartInfo.ArgumentList.Add(arg);
 
         process.Start();
         var stdout = process.StandardOutput.ReadToEnd();
@@ -38,15 +30,25 @@ public sealed class GitWorktreeService
 
         if (process.ExitCode != 0)
         {
-            var message = string.IsNullOrWhiteSpace(stderr)
-                ? "git worktree list failed. Are you inside a git repository?"
-                : stderr.Trim();
+            var message = string.IsNullOrWhiteSpace(stderr) ? "Git command failed." : stderr.Trim();
             throw new InvalidOperationException(message);
         }
 
+        return stdout.Trim();
+    }
+    
+    public static string GetCurrentWorktreeRoot()
+    {
+        return Run("rev-parse", "--show-toplevel");
+    }
+    
+    public static IReadOnlyList<Worktree> GetWorktrees()
+    {
+        var stdout = Run("worktree", "list", "--porcelain");
+
         return ParsePorcelain(stdout);
     }
-
+    
     private static List<Worktree> ParsePorcelain(string output)
     {
         // Each worktree block is separated by a blank line.
@@ -62,7 +64,7 @@ public sealed class GitWorktreeService
 
         return result;
     }
-
+    
     private static Worktree? ParseBlock(string block)
     {
         string? path = null;

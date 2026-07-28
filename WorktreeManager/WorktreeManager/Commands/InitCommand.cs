@@ -2,13 +2,7 @@ using System.CommandLine;
 
 namespace WorktreeManager.Commands;
 
-/// <summary>
-/// The <c>init</c> command — prints a shell integration snippet to stdout.
-///
-/// Usage:
-///   bash:   eval "$(wt init bash)"
-///   PowerShell: Invoke-Expression (& wt init powershell | Out-String)
-/// </summary>
+
 public static class InitCommand
 {
     public static Command Build()
@@ -54,7 +48,7 @@ public static class InitCommand
             case "$cmd" in
                 switch)
                     local target
-                    target=$(command wt switch)
+                    target=$(command wt "$@")
                     local exit_code=$?
                     if [[ $exit_code -eq 0 && -n "$target" ]]; then
                         cd "$target" || return 1
