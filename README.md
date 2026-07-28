@@ -4,7 +4,8 @@ A small CLI tool that makes working with `git worktree` easier: interactively ad
 switch between, list, and remove worktrees without memorizing paths or typing
 `git worktree` incantations by hand.
 
-> ⚠️ **Early development notice:** `wt` is under active, early-stage development.
+> [!WARNING]
+> **Early development notice:** `wt` is under active, early-stage development.
 > Commands, flags, and output may change (or break) between versions without
 > notice.
 
