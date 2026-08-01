@@ -35,6 +35,7 @@ jobs:
           cache-dependency-path: WorktreeManager/WorktreeManager/WorktreeManager.csproj
 
       - name: Publish (${{ matrix.rid }})
+        shell: bash
         run: >
           dotnet publish WorktreeManager/WorktreeManager/WorktreeManager.csproj
           -c Release
