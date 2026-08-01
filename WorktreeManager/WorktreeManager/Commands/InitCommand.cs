@@ -69,7 +69,9 @@ public static class InitCommand
 
         function wt {
             $cmd = if ($args.Count -gt 0) { $args[0] } else { "" }
-            $exe = Get-Command wt -CommandType Application | Select-Object -First 1
+            $exe = Get-Command wt -CommandType Application -All |
+                Where-Object { $_.Source -notlike "*\WindowsApps\wt.exe" } |
+                Select-Object -First 1 -ExpandProperty Source
             switch ($cmd) {
                 "switch" {
                     $target = & $exe switch
