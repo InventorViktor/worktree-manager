@@ -42,6 +42,7 @@ jobs:
           -r ${{ matrix.rid }}
           -o publish/${{ matrix.rid }}
           -p:Version=${GITHUB_REF_NAME#v}
+          -p:IncludeSourceRevisionInInformationalVersion=false
 
       - name: Package archive (zip - Windows)
         if: matrix.archive == 'zip'
