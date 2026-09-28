@@ -24,8 +24,9 @@ switch between, list, and remove worktrees without memorizing paths or typing
 
 `wm` fixes both: `wm add` always creates the new worktree next to the current
 one, and `wm switch` gives you an interactive, searchable picker (powered by
-[Spectre.Console](https://spectreconsole.net/)) that jumps you straight there,
-no matter how deep you currently are.
+[Spectre.Console](https://spectreconsole.net/)). If you already know the
+worktree name, `wm switch <name>` jumps straight there, no matter how deep you
+currently are.
 
 ## Installation
 
@@ -39,7 +40,7 @@ Then copy the resulting `wm` binary onto your `PATH` (e.g. `~/.local/bin`).
 
 ## Shell integration
 
-`wm switch` needs a small shell function to actually change your shell's
+Switching worktrees needs a small shell function to actually change your shell's
 current directory (a child process can never do this for its parent). Set it
 up once:
 
@@ -60,7 +61,7 @@ Add-Content $PROFILE 'Invoke-Expression (& wm init powershell | Out-String)'
 | Command | Description |
 |---|---|
 | `wm add <name> [-b <branch>]` | Create a new worktree next to the current one. Defaults the branch name to the worktree name. |
-| `wm switch` | Interactively pick a worktree (with search) and `cd` into it. |
+| `wm switch [<worktree>]` | Switch to a named worktree, or interactively pick one when no name is provided. |
 | `wm list` | List all worktrees for the current repository. |
 | `wm remove [-f, --force]` | Interactively pick one or more worktrees to remove, with an option to also delete their branches. |
 | `wm init <shell>` | Print the shell integration script for `bash` or `powershell`. |

@@ -72,6 +72,7 @@ public static class InitCommand
             $exe = Get-Command wm -CommandType Application -All |
                 Where-Object { $_.Source -notlike "*\WindowsApps\wm.exe" } |
                 Select-Object -First 1 -ExpandProperty Source
+                
             switch ($cmd) {
                 "switch" {
                     $target = & $exe switch
