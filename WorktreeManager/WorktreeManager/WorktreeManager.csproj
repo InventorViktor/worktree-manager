@@ -7,7 +7,7 @@
         <Nullable>enable</Nullable>
         <PublishAot>true</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <AssemblyName>wt</AssemblyName>
+        <AssemblyName>wm</AssemblyName>
         <RootNamespace>WorktreeManager</RootNamespace>
     </PropertyGroup>
 

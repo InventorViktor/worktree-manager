@@ -39,23 +39,23 @@ public static class InitCommand
     }
     
     private const string BashScript = """
-        # wt shell integration
+        # wm shell integration
         # Add to ~/.bashrc:
-        #   eval "$(wt init bash)"
+        #   eval "$(wm init bash)"
 
-        function wt() {
+        function wm() {
             local cmd="${1:-}"
             case "$cmd" in
                 switch)
                     local target
-                    target=$(command wt "$@")
+                    target=$(command wm "$@")
                     local exit_code=$?
                     if [[ $exit_code -eq 0 && -n "$target" ]]; then
                         cd "$target" || return 1
                     fi
                     ;;
                 *)
-                    command wt "$@"
+                    command wm "$@"
                     ;;
             esac
         }
@@ -63,14 +63,14 @@ public static class InitCommand
         """;
     
     private const string PowerShellScript = """
-        # wt shell integration
+        # wm shell integration
         # Add to your $PROFILE:
-        #   Invoke-Expression (& wt init powershell | Out-String)
+        #   Invoke-Expression (& wm init powershell | Out-String)
 
-        function wt {
+        function wm {
             $cmd = if ($args.Count -gt 0) { $args[0] } else { "" }
-            $exe = Get-Command wt -CommandType Application -All |
-                Where-Object { $_.Source -notlike "*\WindowsApps\wt.exe" } |
+            $exe = Get-Command wm -CommandType Application -All |
+                Where-Object { $_.Source -notlike "*\WindowsApps\wm.exe" } |
                 Select-Object -First 1 -ExpandProperty Source
             switch ($cmd) {
                 "switch" {

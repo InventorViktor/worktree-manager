@@ -3,7 +3,7 @@ using Spectre.Console;
 using WorktreeManager;
 using WorktreeManager.Commands;
 
-var rootCommand = new RootCommand("wt the git worktree manager");
+var rootCommand = new RootCommand("wm the git worktree manager");
 rootCommand.Subcommands.Add(SwitchCommand.Build());
 rootCommand.Subcommands.Add(AddCommand.Build());
 rootCommand.Subcommands.Add(RemoveCommand.Build());

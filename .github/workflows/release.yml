@@ -47,19 +47,19 @@ jobs:
         if: matrix.archive == 'zip'
         shell: pwsh
         run: |
-          Compress-Archive -Path publish/${{ matrix.rid }}/wt${{ matrix.ext }} -DestinationPath wt-${{ matrix.rid }}.zip
+          Compress-Archive -Path publish/${{ matrix.rid }}/wm${{ matrix.ext }} -DestinationPath wm-${{ matrix.rid }}.zip
 
       - name: Package archive (tar.gz - Linux)
         if: matrix.archive == 'tar.gz'
         run: |
-          chmod +x publish/${{ matrix.rid }}/wt${{ matrix.ext }}
-          tar -czf wt-${{ matrix.rid }}.tar.gz -C publish/${{ matrix.rid }} wt${{ matrix.ext }}
+          chmod +x publish/${{ matrix.rid }}/wm${{ matrix.ext }}
+          tar -czf wm-${{ matrix.rid }}.tar.gz -C publish/${{ matrix.rid }} wm${{ matrix.ext }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: wt-${{ matrix.rid }}
-          path: wt-${{ matrix.rid }}.${{ matrix.archive }}
+          name: wm-${{ matrix.rid }}
+          path: wm-${{ matrix.rid }}.${{ matrix.archive }}
           if-no-files-found: error
           archive: false
 
