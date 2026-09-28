@@ -3,19 +3,14 @@ using WorktreeManager.Services;
 
 namespace WorktreeManager.Commands;
 
-public static class ListCommand
+public sealed class ListCommand : Command
 {
-    public static Command Build()
+    public ListCommand() : base("list", "List all git worktrees")
     {
-        var command = new Command("list", "List all git worktrees");
-
-        command.SetAction(_ =>
+        SetAction(_ =>
         {
             var listWorktrees = Git.Run("worktree", "list");
             Console.WriteLine(listWorktrees);
         });
-
-        return command;
     }
 }
-

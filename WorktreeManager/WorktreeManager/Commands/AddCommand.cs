@@ -3,30 +3,26 @@ using WorktreeManager.Services;
 
 namespace WorktreeManager.Commands;
 
-
-public static class AddCommand
+public sealed class AddCommand : Command
 {
-    public static Command Build()
+    private readonly Argument<string> _worktreeNameArgument = new("worktree name")
     {
-        var worktreeNameArg = new Argument<string>("worktree name")
-        {
-            Description = "Name of the new worktree directory"
-        };
+        Description = "Name of the new worktree directory"
+    };
 
-        var branchOption = new Option<string>("-b")
-        {
-            Description = "Name of the new branch to create. Defaults to the worktree name."
-        };
+    private readonly Option<string> _branchOption = new("-b")
+    {
+        Description = "Name of the new branch to create. Defaults to the worktree name."
+    };
 
-        var command = new Command("add", "Create a new git worktree next to the current one");
-        command.Arguments.Add(worktreeNameArg);
-        command.Options.Add(branchOption);
+    public AddCommand() : base("add", "Create a new git worktree next to the current one")
+    {
+        Arguments.Add(_worktreeNameArgument);
+        Options.Add(_branchOption);
         
-        command.SetAction(parseResult => Handle(
-            parseResult.GetValue(worktreeNameArg)!,
-            parseResult.GetValue(branchOption)));
-        
-        return command;
+        SetAction(parseResult => Handle(
+            parseResult.GetValue(_worktreeNameArgument)!,
+            parseResult.GetValue(_branchOption)));
     }
 
     private static int Handle(string worktreeName, string? branchName)
@@ -45,4 +41,3 @@ public static class AddCommand
         return 0;
     }
 }
-

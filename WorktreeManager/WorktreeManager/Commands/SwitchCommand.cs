@@ -5,21 +5,18 @@ using WorktreeManager.Services;
 
 namespace WorktreeManager.Commands;
 
-
-public static class SwitchCommand
+public sealed class SwitchCommand : Command
 {
-    public static Command Build()
+    private readonly Argument<string?> _worktreeArgument = new("worktree")
     {
-        var command = new Command("switch", "Switch to a git worktree");
-        var worktreeArgument = new Argument<string?>("worktree")
-        {
-            Description = "Worktree folder name or path. Omit to choose interactively.",
-            Arity = ArgumentArity.ZeroOrOne
-        };
+        Description = "Worktree folder name or path. Omit to choose interactively.",
+        Arity = ArgumentArity.ZeroOrOne
+    };
 
-        command.Arguments.Add(worktreeArgument);
-        command.SetAction(parseResult => Handle(parseResult.GetValue(worktreeArgument)));
-        return command;
+    public SwitchCommand() : base("switch", "Switch to a git worktree")
+    {
+        Arguments.Add(_worktreeArgument);
+        SetAction(parseResult => Handle(parseResult.GetValue(_worktreeArgument)));
     }
 
     private static int Handle(string? worktreeName)

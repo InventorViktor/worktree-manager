@@ -5,19 +5,17 @@ using WorktreeManager.Services;
 
 namespace WorktreeManager.Commands;
 
-public static class RemoveCommand
+public sealed class RemoveCommand : Command
 {
-    public static Command Build()
+    private readonly Option<bool> _forceOption = new("-f", "--force")
     {
-        var forceOption = new Option<bool>("-f", "--force")
-        {
-            Description = "Force removal of worktrees and branches, even with untracked/modified changes or unmerged commits."
-        };
+        Description = "Force removal of worktrees and branches, even with untracked/modified changes or unmerged commits."
+    };
 
-        var command = new Command("remove", "Interactively remove one or more git worktrees");
-        command.Options.Add(forceOption);
-        command.SetAction(parseResult => Handle(parseResult.GetValue(forceOption)));
-        return command;
+    public RemoveCommand() : base("remove", "Interactively remove one or more git worktrees")
+    {
+        Options.Add(_forceOption);
+        SetAction(parseResult => Handle(parseResult.GetValue(_forceOption)));
     }
 
     private static int Handle(bool force)

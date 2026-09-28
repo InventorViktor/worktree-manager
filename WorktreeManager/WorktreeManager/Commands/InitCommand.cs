@@ -2,22 +2,18 @@ using System.CommandLine;
 
 namespace WorktreeManager.Commands;
 
-
-public static class InitCommand
+public sealed class InitCommand : Command
 {
-    public static Command Build()
+    private readonly Argument<string> _shellArgument = new("shell")
     {
-        var shellArg = new Argument<string>("shell")
-        {
-            Description = "Target shell. Supported values: bash, powershell"
-        };
+        Description = "Target shell. Supported values: bash, powershell"
+    };
 
-        var command = new Command("init", "Print shell integration script for the given shell");
-        command.Arguments.Add(shellArg);
-        command.SetAction(parseResult => Handle(parseResult.GetValue(shellArg)!));
-        return command;
+    public InitCommand() : base("init", "Print shell integration script for the given shell")
+    {
+        Arguments.Add(_shellArgument);
+        SetAction(parseResult => Handle(parseResult.GetValue(_shellArgument)!));
     }
-    
 
     private static int Handle(string shell)
     {
