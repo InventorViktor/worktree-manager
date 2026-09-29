@@ -54,7 +54,9 @@ jobs:
         if: matrix.archive == 'tar.gz'
         run: |
           chmod +x publish/${{ matrix.rid }}/wm${{ matrix.ext }}
-          tar -czf wm-${{ matrix.rid }}.tar.gz -C publish/${{ matrix.rid }} wm${{ matrix.ext }}
+          tar -czf wm-${{ matrix.rid }}.tar.gz \
+            -C publish/${{ matrix.rid }} wm${{ matrix.ext }} \
+            -C "$GITHUB_WORKSPACE" LICENSE
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -91,3 +93,74 @@ jobs:
           gh release create "${{ github.ref_name }}" artifacts/* \
             --title "${{ github.ref_name }}" \
             --generate-notes
+          
+  publish-winget:
+    needs: [build, release]
+    runs-on: windows-latest
+    concurrency:
+      group: winget-publish
+      cancel-in-progress: false
+    env:
+      WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: wm-win-x64
+          path: artifacts
+          skip-decompress: 'true'
+
+      - name: Create WinGet manifest
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.Substring(1)
+          $archive = Resolve-Path artifacts/wm-win-x64.zip
+          $checksum = (Get-FileHash $archive -Algorithm SHA256).Hash
+          $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$env:GITHUB_REF_NAME/wm-win-x64.zip"
+
+          @"
+          PackageIdentifier: InventorViktor.WorktreeManager
+          PackageVersion: $version
+          PackageLocale: en-US
+          Publisher: InventorViktor
+          PublisherUrl: https://github.com/InventorViktor
+          PublisherSupportUrl: https://github.com/$env:GITHUB_REPOSITORY/issues
+          PackageName: Worktree Manager
+          PackageUrl: https://github.com/$env:GITHUB_REPOSITORY
+          License: MIT
+          LicenseUrl: https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_REF_NAME/LICENSE
+          ShortDescription: CLI tool for managing Git worktrees
+          Moniker: wm
+          Tags:
+            - cli
+            - git
+            - worktree
+          ReleaseNotesUrl: https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$env:GITHUB_REF_NAME
+          InstallerType: zip
+          NestedInstallerType: portable
+          NestedInstallerFiles:
+            - RelativeFilePath: wm.exe
+              PortableCommandAlias: wm
+          Commands:
+            - wm
+          UpgradeBehavior: install
+          Installers:
+            - Architecture: x64
+              InstallerUrl: $releaseUrl
+              InstallerSha256: $checksum
+          ManifestType: singleton
+          ManifestVersion: 1.10.0
+          "@ | Set-Content -Path winget.yaml -Encoding utf8
+
+      - name: Submit to WinGet
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINGET_CREATE_GITHUB_TOKEN)) {
+            throw "WINGET_CREATE_GITHUB_TOKEN is not configured"
+          }
+
+          Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe submit `
+            --prtitle "New version: InventorViktor.WorktreeManager $($env:GITHUB_REF_NAME.Substring(1))" `
+            --no-open `
+            winget.yaml
