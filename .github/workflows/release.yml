@@ -118,6 +118,8 @@ jobs:
           $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$env:GITHUB_REF_NAME/wm-win-x64.zip"
 
           @"
+          # yaml-language-server: `$schema=https://aka.ms/winget-manifest.singleton.1.10.0.schema.json
+
           PackageIdentifier: InventorViktor.WorktreeManager
           PackageVersion: $version
           PackageLocale: en-US
