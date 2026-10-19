@@ -1,75 +1,48 @@
-# wm — Worktree Manager
+# wm - Worktree Manager
 
-A small CLI tool that makes working with `git worktree` easier: interactively add,
-switch between, list, and remove worktrees without memorizing paths or typing
-`git worktree` incantations by hand.
-
-> [!WARNING]
-> **Early development notice:** `wm` is under active, early-stage development.
-> Commands, flags, and output may change (or break) between versions without
-> notice.
-
-## Why?
-
-`wm` was born out of two everyday annoyances with `git worktree`:
-
-- **Accidental nested worktrees.** `git worktree add` creates the new worktree
-  relative to your *current* directory, not the repository root. It's easy to
-  forget you're a few folders deep and run `git worktree add ../worktree-name`,
-  only to end up with a worktree nested inside another worktree instead of
-  next to it.
-- **Tedious switching.** Moving between worktrees usually means `cd ..` (or
-  several `cd ..`s if you're not in the root) followed by `cd` into the target
-  worktree — and you have to already know its exact path.
-
-`wm` fixes both: `wm add` always creates the new worktree next to the current
-one, and `wm switch` gives you an interactive, searchable picker (powered by
-[Spectre.Console](https://spectreconsole.net/)). If you already know the
-worktree name, `wm switch <name>` jumps straight there, no matter how deep you
-currently are.
+A CLI tool that makes managing Git worktrees easier. Create, switch between,
+list, and remove worktrees without memorizing paths, with interactive selection
+available for switching and removing worktrees.
 
 ## Installation
 
-Currently, `wm` is built and run from source:
+### Windows (PowerShell)
+
+1. Install with WinGet:
+
+   ```powershell
+   winget install InventorViktor.WorktreeManager
+   ```
+
+2. Add the following line to your PowerShell profile (`$PROFILE`), then restart
+   PowerShell to enable worktree switching:
+
+   ```powershell
+   Invoke-Expression (& wm init powershell | Out-String)
+   ```
+
+### Linux
+
+Download the Linux archive manually from
+[GitHub Releases](https://github.com/InventorViktor/worktree-manager/releases/latest),
+extract it, and place the `wm` binary in a directory on your `PATH`
+(for example, `~/.local/bin`).
+
+For worktree switching in Bash, add the following line to `~/.bashrc`, then
+restart your shell:
 
 ```bash
-dotnet publish -c Release
-```
-
-Then copy the resulting `wm` binary onto your `PATH` (e.g. `~/.local/bin`).
-
-## Shell integration
-
-Switching worktrees needs a small shell function to actually change your shell's
-current directory (a child process can never do this for its parent). Set it
-up once:
-
-**Bash**
-
-```bash
-echo 'eval "$(wm init bash)"' >> ~/.bashrc
-```
-
-**PowerShell**
-
-```powershell
-Add-Content $PROFILE 'Invoke-Expression (& wm init powershell | Out-String)'
+eval "$(wm init bash)"
 ```
 
 ## Commands
 
+Interactive mode is available for `wm switch` (without a worktree argument) and
+`wm remove`, letting you choose worktrees from a picker.
+
 | Command | Description |
 |---|---|
-| `wm add <name> [-b <branch>]` | Create a new worktree next to the current one. Defaults the branch name to the worktree name. |
-| `wm switch [<worktree>]` | Switch to a named worktree, or interactively pick one when no name is provided. |
+| `wm add <name> [-b <branch>]` | Create a worktree next to the current one. The branch name defaults to the worktree name. |
+| `wm switch [<worktree>]` | Switch to a worktree by name or path. Omit the argument to open the interactive picker. |
 | `wm list` | List all worktrees for the current repository. |
-| `wm remove [-f, --force]` | Interactively pick one or more worktrees to remove, with an option to also delete their branches. |
-| `wm init <shell>` | Print the shell integration script for `bash` or `powershell`. |
-
-## Roadmap
-
-- [ ] CI/CD pipeline for automated builds and releases.
-- [ ] Package distribution via `winget` and native Linux package
-  managers.
-- [ ] Easy switching back to the previously used worktree (e.g. `wm switch -`,
-  similar to `git switch -`).
+| `wm remove [-f, --force]` | Interactively choose one or more worktrees to remove, optionally deleting their branches. Use `--force` to allow removal with local changes or unmerged commits. |
