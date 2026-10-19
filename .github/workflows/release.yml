@@ -61,7 +61,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: wm-${{ matrix.rid }}
           path: wm-${{ matrix.rid }}.${{ matrix.archive }}
           if-no-files-found: error
           archive: false
@@ -106,7 +105,7 @@ jobs:
       - name: Download Windows artifact
         uses: actions/download-artifact@v8
         with:
-          name: wm-win-x64
+          name: wm-win-x64.zip
           path: artifacts
           skip-decompress: 'true'
 
